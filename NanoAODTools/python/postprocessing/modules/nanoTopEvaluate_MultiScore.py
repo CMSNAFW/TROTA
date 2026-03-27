@@ -312,8 +312,7 @@ class nanoTopevaluate_MultiClass(Module):
 
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail, go to next event)"""
-        print(type(self.year))
-        print(self.year)
+        
         jets     = Collection(event,"Jet")
         njets    = len(jets)
         fatjets  = Collection(event,"FatJet")
