@@ -5,7 +5,7 @@ from array import array
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection, Object
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
-from PhysicsTools.NanoAODTools.postprocessing.tools import *
+from PhysicsTools.NanoAODTools.postprocessing.utils.tools import *
 import tensorflow as tf
 from itertools import combinations, chain
 import os
@@ -17,9 +17,7 @@ import keras
 def fill_mass(mass_dnn, idx_top, j0, j1, j2, fj):
     if fj == None:#3j0fj
         mass_dnn[idx_top, 0] = (j0.p4()+j1.p4()+j2.p4()).M()
-        # mass_dnn[idx_top, 1] = (j0.p4()+j1.p4()+j2.p4()).M()
-        # top = 
-        mass_dnn[idx_top, 1] = ((j0.p4()+j1.p4()+j2.p4())).M()
+        mass_dnn[idx_top, 1] = (j0.p4()+j1.p4()+j2.p4()).M()
         mass_dnn[idx_top, 2] = ((j0.p4()+j1.p4()+j2.p4())).Pt()
     elif j2 == None:#2j1fj
         mass_dnn[idx_top, 0] = (j0.p4()+j1.p4()).M()
@@ -36,30 +34,6 @@ def fill_mass(mass_dnn, idx_top, j0, j1, j2, fj):
     #     mass_dnn[idx_top, 3] = variables_cluster[1]
     #     mass_dnn[idx_top, 4] = variables_cluster[2] 
     return mass_dnn
-
-def fill_mass(mass_dnn, idx_top, j0, j1, j2, fj):
-    if fj == None:#3j0fj
-        mass_dnn[idx_top, 0] = (j0.p4()+j1.p4()+j2.p4()).M()
-        # mass_dnn[idx_top, 1] = (j0.p4()+j1.p4()+j2.p4()).M()
-        # top = 
-        mass_dnn[idx_top, 1] = ((j0.p4()+j1.p4()+j2.p4())).M()
-        mass_dnn[idx_top, 2] = ((j0.p4()+j1.p4()+j2.p4())).Pt()
-    elif j2 == None:#2j1fj
-        mass_dnn[idx_top, 0] = (j0.p4()+j1.p4()).M()
-        top                  = top2j1fj(fj, j0, j1)
-        mass_dnn[idx_top, 1] = top.M()
-        mass_dnn[idx_top, 2] = top.Pt()
-    else: #3j1fj
-        mass_dnn[idx_top, 0] = (j0.p4()+j1.p4()+j2.p4()).M()
-        top                  = top3j1fj(fj, j0, j1, j2)
-        mass_dnn[idx_top, 1] = top.M()
-        mass_dnn[idx_top, 2] = top.Pt()
-    # if isinstance(variables_cluster,list):
-    #     mass_dnn[idx_top, 2] = variables_cluster[0]
-    #     mass_dnn[idx_top, 3] = variables_cluster[1]
-    #     mass_dnn[idx_top, 4] = variables_cluster[2] 
-    return mass_dnn
-
 
 def fill_fj(fj_dnn, fj, idx_top, year):
     if year==2018: 
@@ -81,7 +55,7 @@ def fill_fj(fj_dnn, fj, idx_top, year):
         fj_dnn[idx_top, 2]  = fj.particleNetWithMass_TvsQCD
         fj_dnn[idx_top, 3]  = fj.particleNetWithMass_WvsQCD
         fj_dnn[idx_top, 4]  = fj.particleNet_QCD
-        fj_dnn[idx_top, 5]  = fj.particleNetWithMass_QCD
+        fj_dnn[idx_top, 5]  = fj.particleNetWithMass_QCD 
         fj_dnn[idx_top, 6]  = fj.particleNet_XbbVsQCD
         fj_dnn[idx_top, 7]  = fj.particleNet_XqqVsQCD
         fj_dnn[idx_top, 8]  = fj.eta
@@ -220,10 +194,14 @@ def boost_PFC(pt_top,eta_top,phi_top,M_top,pt_PFC,eta_PFC,phi_PFC,M_PFC):
 
     return pt_new, eta_new, phi_new, mass_new
 
-def fill_PFCs(n_PFCs, PFCs_dnn, PFCs, idx_top, pt_top, eta_top, phi_top, M_top, year): 
+def fill_PFCs(n_PFCs, PFCs_dnn, PFCs, idx_top, top, year): 
     if year==2022:
         for i,particle in enumerate(PFCs):
             if i<n_PFCs: #minore e non minore e uguale perchè parte da 0
+                phi_top = top.phi
+                eta_top = top.eta
+                pt_top  = top.pt
+                M_top   = top.mass
                 pt_boost, eta_boost, phi_boost, mass_boost = boost_PFC(pt_top, eta_top, phi_top, M_top, particle.pt ,particle.eta, particle.phi, particle.mass)
                 PFCs_dnn[idx_top, i, 0] = pt_boost
                 PFCs_dnn[idx_top, i, 1] = eta_boost
@@ -253,10 +231,14 @@ def fill_PFCs(n_PFCs, PFCs_dnn, PFCs, idx_top, pt_top, eta_top, phi_top, M_top, 
                 PFCs_dnn[idx_top, i, 8] = particle.IsInFatJet
     return PFCs_dnn
 
-def fill_SVs(n_SVs, SVs_dnn, SVs, idx_top, pt_top, eta_top, phi_top, M_top, year):
+def fill_SVs(n_SVs, SVs_dnn, SVs, idx_top,top, year):
     if year==2022:
         for i, particle in enumerate(SVs):
             if i < n_SVs:
+                phi_top = top.phi
+                eta_top = top.eta
+                pt_top  = top.pt
+                M_top   = top.mass
                 pt_boost, eta_boost, phi_boost, mass_boost = boost_PFC(pt_top, eta_top, phi_top, M_top, particle.pt, particle.eta, particle.phi, particle.mass)
                 SVs_dnn[idx_top, i, 0]   = pt_boost
                 SVs_dnn[idx_top, i, 1]  = eta_boost
@@ -274,26 +256,32 @@ def fill_SVs(n_SVs, SVs_dnn, SVs, idx_top, pt_top, eta_top, phi_top, M_top, year
 
 
 
-path_to_model = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/TROTA_2024/trainings/" % os.environ["CMSSW_BASE"]
+# path_to_model = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/TROTA2024/trainings/" % os.environ["CMSSW_BASE"]
 
 
-# model_Mixed = 'training_pfsv_Mixed_31_08_2025/model_31_08_2025.h5'
-model_Mixed = 'grid_search_trota_mixed_05_02_2026/model_05_02_2026.h5'
-model_Resolved = 'grid_search_trota_resolved_04_02_2026/model_04_02_2026.h5'
+# # model_Mixed = 'training_pfsv_Mixed_31_08_2025/model_31_08_2025.h5'
+# model_Mixed = 'grid_search_trota_mixed_12_03_2026/model_12_03_2026.h5'
+# model_Resolved = 'grid_search_trota_resolved_13_03_2026/model_13_03_2026.h5'
 
-models                  = {}
-models['mixed'] = tf.keras.models.load_model(path_to_model + model_Mixed)
-models['resolved'] = tf.keras.models.load_model(path_to_model + model_Resolved)
+# models                  = {}
+# models['mixed'] = tf.keras.models.load_model(path_to_model + model_Mixed)
+# models['resolved'] = tf.keras.models.load_model(path_to_model + model_Resolved)
 
 
 
 class nanoTopevaluate_MultiClass(Module):
-    def __init__(self, isMC=1, resolved = False, year =2024, pfc=False, sv=False):
+    def __init__(self, modelMix_path, modelRes_path, isMC=1, year=2024, pfc = False, sv = False):
+        self.modelMix_path = modelMix_path
+        self.modelRes_path = modelRes_path
+        self.modelMix      = tf.keras.models.load_model(modelMix_path)
+        self.modelRes      = tf.keras.models.load_model(modelRes_path)
         self.isMC = isMC
-        self.resolved = resolved
         self.year = year
         self.pfc = pfc
-        self.sv = sv
+        if self.year != 2024:
+            self.sv = sv
+        else:
+            self.sv = False
         pass
 
 
@@ -324,7 +312,8 @@ class nanoTopevaluate_MultiClass(Module):
 
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail, go to next event)"""
-        
+        print(type(self.year))
+        print(self.year)
         jets     = Collection(event,"Jet")
         njets    = len(jets)
         fatjets  = Collection(event,"FatJet")
@@ -349,7 +338,7 @@ class nanoTopevaluate_MultiClass(Module):
 
         n_SVs, n_PFCs = 3,20
 
-        print('starting evaluate')
+        # print('starting evaluate')
         if self.year==2018:
             jets_dnn            = np.zeros((len(tophighpt),3,8))
             fj_dnn         = np.zeros((len(tophighpt),12))
@@ -358,14 +347,15 @@ class nanoTopevaluate_MultiClass(Module):
             fj_dnn         = np.zeros((len(tophighpt),12))
             if self.pfc:
                 PFC_dnn            = np.zeros((len(tophighpt),n_PFCs,13))
-            if self.sv:
-                SVs_dnn           = np.zeros((len(tophighpt),n_SVs, 12))
+            
         elif self.year==2024:
             jets_dnn            = np.zeros((len(tophighpt),3,8))
             fj_dnn         = np.zeros((len(tophighpt),15))
             if self.pfc:
                 PFC_dnn            = np.zeros((len(tophighpt),n_PFCs,9))
         mass_dnn = np.zeros((len(tophighpt),3))
+        if self.sv:
+                SVs_dnn           = np.zeros((len(tophighpt),n_SVs, 12))
         # label_toappend = np.zeros((1,1))
         # event_category_toappend = np.zeros((1,1))
 
@@ -373,15 +363,15 @@ class nanoTopevaluate_MultiClass(Module):
             # print(i)
             # print(je)
             if top.idxJet2==-1:
-                j0, j1      = jets[top.idxJet0],jets[top.idxJet1]
-                fj          = fatjets[top.idxFatJet]
+                j0, j1      = goodjets[top.idxJet0],goodjets[top.idxJet1]
+                fj          = goodfatjets[top.idxFatJet]
                 sumjet      = j0.p4()+j1.p4()
                 jets_dnn    = fill_jets(jets_dnn = jets_dnn, j0=j0, j1=j1, j2=None, sumjet = sumjet,  fj_phi= fj.phi, fj_eta=fj.eta, idx_top=i, year = self.year)
                 fj_dnn      = fill_fj(fj_dnn= fj_dnn, fj= fj, idx_top= i, year = self.year)
                 mass_dnn    = fill_mass(mass_dnn=mass_dnn, idx_top=i, j0=j0, j1=j1, j2 =None, fj = fj)
             
             elif top.idxFatJet==-1:
-                j0, j1, j2  = jets[top.idxJet0],jets[top.idxJet1],jets[top.idxJet2]
+                j0, j1, j2  = goodjets[top.idxJet0],goodjets[top.idxJet1],goodjets[top.idxJet2]
                 fj          = ROOT.TLorentzVector()
                 fj.SetPtEtaPhiM(0,0,0,0)
                 sumjet      = j0.p4()+j1.p4()+j2.p4()
@@ -389,8 +379,8 @@ class nanoTopevaluate_MultiClass(Module):
                 mass_dnn    = fill_mass(mass_dnn=mass_dnn, idx_top=i, j0=j0, j1=j1, j2 =j2, fj = None)
             else:
 
-                j0, j1, j2  = jets[top.idxJet0],jets[top.idxJet1],jets[top.idxJet2]
-                fj          = fatjets[top.idxFatJet]
+                j0, j1, j2  = goodjets[top.idxJet0],goodjets[top.idxJet1],goodjets[top.idxJet2]
+                fj          = goodfatjets[top.idxFatJet]
                 sumjet      = j0.p4() + j1.p4() +j2.p4()
                 jets_dnn    = fill_jets(jets_dnn=jets_dnn, j0= j0,j1= j1,j2= j2,sumjet= sumjet,fj_phi= fj.phi,fj_eta= fj.eta,idx_top= i, year = self.year)
                 fj_dnn      = fill_fj(fj_dnn= fj_dnn,fj= fj, idx_top=i, year = self.year)
@@ -398,7 +388,7 @@ class nanoTopevaluate_MultiClass(Module):
            
             
 
-            if self.year == 2022 and self.sv:
+            if self.sv:
                 sv_indexes = []
                 SVs = []
 
@@ -435,7 +425,7 @@ class nanoTopevaluate_MultiClass(Module):
             
             if self.pfc:
                 fill_PFCs(n_PFCs= n_PFCs, PFCs_dnn= PFC_dnn, PFCs= PFCs, idx_top= i, pt_top= top.pt, eta_top= top.eta, phi_top= top.phi, M_top= top.mass, year = self.year)
-            if self.year == 2022:
+            if self.sv:
                 fill_SVs(n_SVs= n_SVs, SVs_dnn= SVs_dnn, SVs= SVs, idx_top= i, pt_top= top.pt, eta_top= top.eta, phi_top= top.phi, M_top= top.mass, year = self.year)
 
        
@@ -446,13 +436,15 @@ class nanoTopevaluate_MultiClass(Module):
         if len(tophighpt)!=0:
             # top_score2      = models["score2"].predict({"fatjet":fj_dnn, "jet": jets_dnn,  "top_mass": mass_dnn[:,:2]}).flatten().tolist()
             
-            model = models['mixed']
+            
             if self.pfc and self.sv:    
-                scores = model({"fatjet":fj_dnn, "jet": jets_dnn, "top": mass_dnn, 'pfc': PFC_dnn, 'sv':SVs_dnn}).numpy()
+                scores = self.modelMix({"fatjet":fj_dnn, "jet": jets_dnn, "top": mass_dnn, 'pfc': PFC_dnn, 'sv':SVs_dnn}).numpy()
             elif self.pfc and not self.sv:
-                scores = model({"fatjet":fj_dnn, "jet": jets_dnn, "top": mass_dnn, 'pfc': PFC_dnn}).numpy()                
-            elif not self.pfc and not self.sv:
-                scores = model({"fatjet":fj_dnn, "jet":jets_dnn, "top":mass_dnn}).numpy()
+                scores = self.modelMix({"fatjet":fj_dnn, "jet": jets_dnn, "top": mass_dnn, 'pfc': PFC_dnn}).numpy()     
+            elif not self.pfc and self.sv:
+                scores = self.modelMix({"fatjet":fj_dnn, "jet": jets_dnn, "top": mass_dnn, 'sv':SVs_dnn}).numpy()
+            else :
+                scores = self.modelMix({"fatjet":fj_dnn, "jet":jets_dnn, "top":mass_dnn}).numpy()
            
             prob_true_tt = (scores[:,1]).flatten().tolist()
             prob_false_tt = (scores[:,0]).flatten().tolist()
@@ -492,14 +484,14 @@ class nanoTopevaluate_MultiClass(Module):
         for i, top in enumerate(toplowpt):
             
                 
-            j0, j1, j2 = jets[top.idxJet0],jets[top.idxJet1],jets[top.idxJet2]
+            j0, j1, j2 = goodjets[top.idxJet0],goodjets[top.idxJet1],goodjets[top.idxJet2]
             fj = ROOT.TLorentzVector()
             fj.SetPtEtaPhiM(0,0,0,0)
             sumjet = j0.p4()+j1.p4()+j2.p4()
             jets_dnn_res = fill_jets(jets_dnn=jets_dnn_res, j0= j0,j1= j1,j2= j2,sumjet= sumjet,fj_phi= fj.Phi(),fj_eta= fj.Eta(),idx_top= i, year = self.year)
             mass_dnn_res    = fill_mass(mass_dnn=mass_dnn_res, idx_top=i, j0=j0, j1=j1, j2 =j2, fj = None)
 
-            if self.year == 2022 and self.sv:
+            if self.sv:
                 sv_indexes = []
                 SVs = []
 
@@ -536,24 +528,24 @@ class nanoTopevaluate_MultiClass(Module):
             
             if self.pfc:
                 fill_PFCs(n_PFCs= n_PFCs, PFCs_dnn= PFC_dnn_res, PFCs= PFCs, idx_top= i, pt_top= top.pt, eta_top= top.eta, phi_top= top.phi, M_top= top.mass, year = self.year)
-            if self.year == 2022:
+            if self.sv:
                 fill_SVs(n_SVs= n_SVs, SVs_dnn= SVs_dnn_res, SVs= SVs, idx_top= i, pt_top= top.pt, eta_top= top.eta, phi_top= top.phi, M_top= top.mass, year = self.year)
 
-        print('jets dnn: ', jets_dnn_res.shape)
-        print('mass dnn;' , mass_dnn_res.shape)
+        # print('jets dnn: ', jets_dnn_res.shape)
+        # print('mass dnn;' , mass_dnn_res.shape)
 
 
 
         if len(toplowpt)!=0:
-            modelRes = models['resolved']
+            # modelRes = models['resolved']
 
 
             if self.pfc and self.sv:    
-                scores = modelRes({ "jet": jets_dnn_res, "top": mass_dnn_res, 'pfc': PFC_dnn_res, 'sv':SVs_dnn_res}).numpy()
+                scores = self.modelRes({ "jet": jets_dnn_res, "top": mass_dnn_res, 'pfc': PFC_dnn_res, 'sv':SVs_dnn_res}).numpy()
             elif self.pfc and not self.sv:
-                scores = modelRes({ "jet": jets_dnn_res, "top": mass_dnn_res, 'pfc': PFC_dnn_res}).numpy()                
+                scores = self.modelRes({ "jet": jets_dnn_res, "top": mass_dnn_res, 'pfc': PFC_dnn_res}).numpy()                
             elif not self.pfc and not self.sv:
-                scores = modelRes({ "jet":jets_dnn_res, "top":mass_dnn_res}).numpy()
+                scores = self.modelRes({ "jet":jets_dnn_res, "top":mass_dnn_res}).numpy()
            
             # top_score_DNN = modelRes({"jet": jets_dnn_res,'top': mass_dnn_res,'pfc': PFC_dnn_res, 'sv': SVs_dnn_res}).numpy()
             prob_true_tt_res = (scores[:,1]).flatten().tolist()

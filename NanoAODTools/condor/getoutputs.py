@@ -1,17 +1,20 @@
 # to run from lxplus9
 import ROOT, os
 import subprocess
-from PhysicsTools.NanoAODTools.postprocessing.samples.samples_2024 import *
+from PhysicsTools.NanoAODTools.postprocessing.samples.samples_with_PF import *
 import optparse
 import json
 from tqdm import tqdm
 import sys
+from checkjobs import get_file_sizes, find_folder, job_exit_code, checkSubmitStatus
+
 
 usage = 'python3 getoutputs.py -d dataset_name'
 parser = optparse.OptionParser(usage)
 parser.add_option('-d', '--dat', dest='dat', type=str, default = '', help='Please enter a dataset name')
-parser.add_option('-o', '--output', dest='output', type=str, default = '../python/postprocessing/samples/dict_samples_2024.json', help='Please enter a json output file')
+parser.add_option('-o', '--output', dest='output', type=str, default = '../python/postprocessing/samples/dict_samples.json', help='Please enter a json output file')
 parser.add_option('--tier', dest='tier', type=str, default = 'bari', help='Please enter location where to write the output file (tier pisa or bari)')
+
 (opt, args) = parser.parse_args()
 where_to_read = opt.tier
 
@@ -38,7 +41,7 @@ os.popen("cp /tmp/x509up_u" + str(uid) + " /afs/cern.ch/user/" + inituser + "/" 
 
 # insert here the name of output folder
 running_folder                      = os.environ.get('PWD') + "/tmp/"
-remote_folder_name                  = "TROTA_2024/PostProcessed_samples"
+remote_folder_name                  = "Run3Analysis_Tprime/PostProcessed_samples"
 
 def get_files_on_tier(folder, cert_path, ca_path):
     try:
@@ -48,11 +51,12 @@ def get_files_on_tier(folder, cert_path, ca_path):
         
         output, error = process.communicate()
         output = output.decode('utf-8')
-
+        # print(output)
         files = []
         for line in output.splitlines():
             # Ignora le righe non relative ai file (come intestazioni o directory)
             if line.endswith('.root') and line:
+                # print(line)
                 file_name = line
                 files.append(file_name)
         
@@ -112,10 +116,27 @@ for sample in samples:
         out_dict[sample.label] = {}
         out_dict[sample.label][sample.label] = {}
     print("---------- Running sample: ", sample.label)
-    folder = "davs://webdav.recas.ba.infn.it:8443/cms/store/user/apuglia/TROTA_2024/PostProcessed_samples/" + sample.label
+    folder = find_folder(redirector, username, remote_folder_name, sample.label, "/tmp/x509up_u"+str(uid), "/cvmfs/cms.cern.ch/grid/etc/grid-security/certificates/")
+    print("Folder: ", folder)
     
     files_strings   = get_files_on_tier(folder, "/tmp/x509up_u"+str(uid), "/cvmfs/cms.cern.ch/grid/etc/grid-security/certificates/")
+    
+    file_sizes      = get_file_sizes(folder, "/tmp/x509up_u"+str(uid), "/cvmfs/cms.cern.ch/grid/etc/grid-security/certificates/")
+    # files_strings   = []
 
+    # jobs_total, total_on_tier, to_resubmit, not_found, empty, jobs_toResubmit_notFoundOnTier, jobs_toResubmit_emptyFile = checkSubmitStatus(redirector, username, uid, sample, running_folder, remote_folder_name)
+    # for file_name, file_size in file_sizes.items():
+    #     jobNumber        = int(file_name.split("_")[-1].split(".")[0])
+    #     if jobNumber in jobs_toResubmit_emptyFile:
+    #         job_logFile      = "/afs/cern.ch/user/" + inituser + "/" + username + "/TprimeAnalysis/NanoAODTools/condor/tmp/" + sample.label + "/condor/log/" + sample.label + "_file" + str(jobNumber) + ".log"
+    #         job_errFile      = "/afs/cern.ch/user/" + inituser + "/" + username + "/TprimeAnalysis/NanoAODTools/condor/tmp/" + sample.label + "/condor/error/" + sample.label + "_file" + str(jobNumber) + ".err"
+    #         print(f"Excluding File: {file_name}, Size: {file_size} bytes")
+    #         print(f"\t\tcheck the log file: {job_logFile}")
+    #         print(f"\t\tcheck the err file: {job_errFile}")
+    #         continue
+    #     else:
+    #         files_strings.append(file_name)
+    
    
     path_file = folder
     ntot = []
@@ -149,13 +170,16 @@ for sample in samples:
             # ntot.append(histo.GetBinContent(2))
         else:
             try:
-                rootfile = ROOT.TFile.Open(f,'READ')
-                if rootfile.IsZombie():
-                    print("Could not open file (zombie): ", f)
-                    ntot.append(None)
-                    continue
+                rootfile = ROOT.TFile.Open(f)
                 out_strings.append(f)
-                ntot.append(None)
+                runstree = rootfile.Get("Runs")
+                runstree.GetEntry(0)
+                geneventSumw = runstree.genEventSumw
+                tree = rootfile.Get("Events")
+                tree.GetEntry(0)
+                eventweight = abs(tree.Generator_weight)
+                n = round(abs(geneventSumw/eventweight))
+                ntot.append(n)
             except:
                 print("Could not open file: ", f)
                 ntot.append(None)

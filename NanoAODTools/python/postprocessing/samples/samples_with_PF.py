@@ -134,6 +134,28 @@ TT_2022                     = sample(ROOT.kRed, 1, 1001, "t#bar{t}", "TT_2022")
 TT_2022.year                = 2022
 TT_2022.components          = [TT_semilep_2022, TT_hadr_2022, TT_dilep_2022]
 
+#####################TW####################
+#ANcora non post processati
+
+TWminus_1L_2022              = sample(ROOT.kTeal-7,1, 1001, 'TW', 'TWminus_1L_2022')
+TWminus_1L_2022.dataset      = '/TWminus_DR_AtLeastOneLepton_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM'
+TWminus_1L_2022.sigma        = 36
+TWminus_1L_2022.year         = 2022
+TWminus_1L_2022.process      = "TW_2022"
+TWminus_1L_2022.EE           = 0
+
+TbarWplus_1L_2022            = sample(ROOT.kTeal -7,1,1001,'TW', 'TbarWplus_1L_2022')
+TbarWplus_1L_2022.dataset    = '/TbarWplus_DR_AtLeastOneLepton_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM'
+TbarWplus_1L_2022.sigma      = 36
+TbarWplus_1L_2022.year       = 2022
+TbarWplus_1L_2022.process    = "TW_2022"
+TbarWplus_1L_2022.EE           = 0
+
+TW_2022                      = sample(ROOT.kTeal -7,1,1001, 'TW', 'TW_2022')
+TW_2022.year                 = 2022
+TW_2022.components           = [TWminus_1L_2022, TbarWplus_1L_2022]
+
+
 ################################ ZJets ################################
 
 ZJetsToNuNu_HT100to200_2022             = sample(ROOT.kAzure+6, 1, 1001, "ZJets #rightarrow #nu#nu", "ZJetsToNuNu_HT100to200_2022")
@@ -292,6 +314,10 @@ ZJetsToNuNu_2jets_2022.components = [
                                     ]
 
 ################################ WJets ################################
+
+#HT non sono post processati
+
+
 WJets_HT120to200_2022               = sample(ROOT.kGreen-3, 1, 1001, "W + Jets", "WJets_HT120to200_2022") 
 WJets_HT120to200_2022.dataset       = "/WtoLNu-4Jets_MLNu-120to200_TuneCP5_13p6TeV_madgraphMLM-pythia8/apuglia-WtoLNu-4Jets_MLNu-120to200_v2-0fa328e40e38f44cd311b92489b92b5b/USER"
 WJets_HT120to200_2022.sigma         = 167
@@ -387,6 +413,40 @@ WJets_2jets2J_2022.EE        = 0
 WJets_2jets_2022             = sample(ROOT.kGreen-3, 1, 1001, "W + Jets", "WJets_2jets_2022")
 WJets_2jets_2022.year        = 2022
 WJets_2jets_2022.components  = [WJets_2jets0J_2022, WJets_2jets1J_2022, WJets_2jets2J_2022]
+
+WtoLNu_4jets_2022             = sample(ROOT.kGreen-3, 1, 1001, "W + Jets", "WtoLNu_4jets_2022")
+WtoLNu_4jets_2022.dataset     = "/WtoLNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM"
+WtoLNu_4jets_2022.year        = 2022
+WtoLNu_4jets_2022.sigma       = 55390
+WtoLNu_4jets_2022.process     = "WJets_4jets_2022"
+WtoLNu_4jets_2022.EE          = 0
+
+WtoLNu_4jets2J_2022          = sample(ROOT.kRed-7,1,1001,'W + Jets', 'WtoLNu_4Jets2J_2022')
+WtoLNu_4jets2J_2022.dataset  = '/WtoLNu-4Jets_2J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v1/NANOAODSIM'
+WtoLNu_4jets2J_2022.sigma    = 2925
+WtoLNu_4jets2J_2022.EE       = 0
+WtoLNu_4jets2J_2022.process  = "WJets_4jets_2J_2022"
+WtoLNu_4jets2J_2022.year     = 2022
+
+WtoLNu_4jets3J_2022          = sample(ROOT.kRed-7,1,1001,'W + Jets', 'WtoLNu_4Jets3J_2022')
+WtoLNu_4jets3J_2022.dataset  = '/WtoLNu-4Jets_3J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM'
+WtoLNu_4jets3J_2022.sigma    = 861.7	
+WtoLNu_4jets3J_2022.EE       = 0
+WtoLNu_4jets3J_2022.process  = "WJets_4jets_3J_2022"
+WtoLNu_4jets3J_2022.year     = 2022
+
+WtoLNu_4jets4J_2022          = sample(ROOT.kRed-7,1,1001,'W + Jets', 'WtoLNu_4Jets4J_2022')
+WtoLNu_4jets4J_2022.dataset  = '/WtoLNu-4Jets_4J_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM'
+WtoLNu_4jets4J_2022.sigma    = 416.5
+WtoLNu_4jets4J_2022.EE       = 0
+WtoLNu_4jets4J_2022.process  = "WJets_4jets_4J_2022"
+WtoLNu_4jets4J_2022.year     = 2022
+
+WJets_4jets_2022              = sample(ROOT.kRed-7,1,1011,'W + Jets', 'WJets_4jets_2022')
+WJets_4jets_2022.year         = 2022
+WJets_4jets_2022.components   = [WtoLNu_4jets_2022, WtoLNu_4jets2J_2022, WtoLNu_4jets3J_2022, WtoLNu_4jets4J_2022]
+
+
 
 #######################################   VLQ T signals   #######################################
 TprimeToTZ_700_2022           = sample(ROOT.kGreen, 1, 1001, "T#rightarrow tZ M700GeV", "TprimeToTZ_700_2022")
@@ -790,6 +850,7 @@ TW_2024.components = [Top_W_minus_2L2Nu_2024, Top_W_minus_4Q_2024, Top_W_minus_L
 
 
 
+
 sample_dict = {
 
 
@@ -809,7 +870,8 @@ sample_dict = {
     ########### TT
     'TT_2022': TT_2022, 'TT_semilep_2022' : TT_semilep_2022, 'TT_hadr_2022' : TT_hadr_2022, 'TT_dilep_2022' : TT_dilep_2022,
     ########## SingleTop
-
+    
+    "TW_2022":TW_2022, "TWminus_1L_2022":TWminus_1L_2022, "TbarWplus_1L_2022":TbarWplus_1L_2022,
     ########## WJets
     "WJets_2jets_2022": WJets_2jets_2022, 
     "WJets_2jets0J_2022": WJets_2jets0J_2022, "WJets_2jets1J_2022": WJets_2jets1J_2022, "WJets_2jets2J_2022": WJets_2jets2J_2022,
@@ -819,6 +881,11 @@ sample_dict = {
     "WJets_HT400to800_2022":WJets_HT400to800_2022, "WJets_HT800to1500_2022":WJets_HT800to1500_2022, 
     "WJets_HT1500to2500_2022":WJets_HT1500to2500_2022, "WJets_HT2500to4000_2022":WJets_HT2500to4000_2022, 
     "WJets_HT4000to6000_2022":WJets_HT4000to6000_2022, "WJets_HT6000_2022":WJets_HT6000_2022,
+
+    "WJets_4jets_2022": WJets_4jets_2022, 
+    "WtoLNu_4jets2J_2022": WtoLNu_4jets2J_2022 , "WtoLNu_4jets3J_2022":WtoLNu_4jets3J_2022, 
+    "WtoLNu_4jets4J_2022": WtoLNu_4jets4J_2022 , "WtoLNu_4jets_2022": WtoLNu_4jets_2022, 
+    
     ########## ZJetsToNuNu
     "ZJetsToNuNu_2022":ZJetsToNuNu_2022, "ZJetsToNuNu_HT100to200_2022":ZJetsToNuNu_HT100to200_2022, 
     "ZJetsToNuNu_HT200to400_2022":ZJetsToNuNu_HT200to400_2022, "ZJetsToNuNu_HT400to800_2022":ZJetsToNuNu_HT400to800_2022, 
@@ -868,7 +935,5 @@ sample_dict = {
     "ZJetsToNuNu_2024": ZJetsToNuNu_2024, 
     "ZJetsToNuNu_HT100to200_2024": ZJetsToNuNu_HT100to200_2024, "ZJetsToNuNu_HT200to400_2024":ZJetsToNuNu_HT200to400_2024, "ZJetsToNuNu_HT400to800_2024":ZJetsToNuNu_HT400to800_2024, 
     "ZJetsToNuNu_HT800to1500_2024": ZJetsToNuNu_HT800to1500_2024, "ZJetsToNuNu_HT1500to2500_2024": ZJetsToNuNu_HT1500to2500_2024, "ZJetsToNuNu_HT2500_2024": ZJetsToNuNu_HT2500_2024
-
-
 
     }

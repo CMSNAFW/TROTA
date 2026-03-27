@@ -8,3 +8,7 @@ build
 *.d
 *.so
 *.pcm
+NanoAODTools/python/postprocessing/TROTA2024/trainings/
+NanoAODTools/python/postprocessing/TROTA2022/trainings/
+tmp/
+NanoAODTools/condor/tmp/

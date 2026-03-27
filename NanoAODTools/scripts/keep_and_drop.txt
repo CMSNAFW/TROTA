@@ -1,0 +1,11 @@
+drop *
+keep Jet*
+keep FatJet*
+keep PF*
+keep SV*
+keep Top*
+keep GenPart*
+keep PuppiMET*
+keep Electron* 
+keep Muon*
+keep HLT*
